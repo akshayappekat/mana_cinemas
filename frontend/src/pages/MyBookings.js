@@ -9,22 +9,20 @@ const MyBookings = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const fetchBookings = async () => {
+      try {
+        const res = await axios.get(`${API_BASE}/api/bookings/my`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setBookings(res.data.bookings);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchBookings();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const fetchBookings = async () => {
-    try {
-      const res = await axios.get(`${API_BASE}/api/bookings/my`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setBookings(res.data.bookings);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [token]);
 
   const handleCancel = async (bookingId) => {
     if (!window.confirm('Are you sure you want to cancel this booking?')) return;

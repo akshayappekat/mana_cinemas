@@ -70,23 +70,24 @@ const MovieDetails = () => {
   const [loading, setLoading] = useState(true);
   const [showTrailer, setShowTrailer] = useState(false);
 
-  useEffect(() => { fetchMovieAndShows(); }, [id, selectedDate]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const fetchMovieAndShows = async () => {
-    setLoading(true);
-    try {
-      const [movieRes, showsRes] = await Promise.all([
-        axios.get(`${API_BASE}/api/movies/${id}`),
-        axios.get(`${API_BASE}/api/shows?movieId=${id}&date=${selectedDate}`),
-      ]);
-      setMovie(movieRes.data.movie);
-      setShows(showsRes.data.shows);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    const fetchMovieAndShows = async () => {
+      setLoading(true);
+      try {
+        const [movieRes, showsRes] = await Promise.all([
+          axios.get(`${API_BASE}/api/movies/${id}`),
+          axios.get(`${API_BASE}/api/shows?movieId=${id}&date=${selectedDate}`),
+        ]);
+        setMovie(movieRes.data.movie);
+        setShows(showsRes.data.shows);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchMovieAndShows();
+  }, [id, selectedDate]);
 
   const groupShowsByCinema = () => {
     const grouped = {};

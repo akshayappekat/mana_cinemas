@@ -201,18 +201,19 @@ const ShowBooking = () => {
   const [error, setError] = useState('');
   const [step, setStep] = useState(1);
 
-  useEffect(() => { fetchShow(); }, [showId]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const fetchShow = async () => {
-    try {
-      const res = await axios.get(`${API_BASE}/api/shows/${showId}`);
-      setShow(res.data.show);
-    } catch {
-      setError('Show not found');
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    const fetchShow = async () => {
+      try {
+        const res = await axios.get(`${API_BASE}/api/shows/${showId}`);
+        setShow(res.data.show);
+      } catch {
+        setError('Show not found');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchShow();
+  }, [showId]);
 
   const bookedSeats = show?.bookedSeats || [];
 

@@ -12,8 +12,19 @@ const Home = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const fetchMovies = async () => {
+      setLoading(true);
+      try {
+        const res = await axios.get(`${API_BASE}/api/movies?status=${filter}`);
+        setMovies(res.data.movies);
+        setHeroIndex(0);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchMovies();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter]);
 
   // Auto-advance hero carousel every 5 seconds
@@ -24,19 +35,6 @@ const Home = () => {
     }, 5000);
     return () => clearInterval(timer);
   }, [movies]);
-
-  const fetchMovies = async () => {
-    setLoading(true);
-    try {
-      const res = await axios.get(`${API_BASE}/api/movies?status=${filter}`);
-      setMovies(res.data.movies);
-      setHeroIndex(0);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const heroMovies = movies.slice(0, 5);
   const heroMovie = heroMovies[heroIndex];
