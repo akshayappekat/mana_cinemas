@@ -70,7 +70,7 @@ const MovieDetails = () => {
   const [loading, setLoading] = useState(true);
   const [showTrailer, setShowTrailer] = useState(false);
 
-  useEffect(() => { fetchMovieAndShows(); }, [id, selectedDate]);
+  useEffect(() => { fetchMovieAndShows(); }, [id, selectedDate]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchMovieAndShows = async () => {
     setLoading(true);

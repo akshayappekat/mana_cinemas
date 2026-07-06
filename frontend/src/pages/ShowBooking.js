@@ -201,7 +201,7 @@ const ShowBooking = () => {
   const [error, setError] = useState('');
   const [step, setStep] = useState(1);
 
-  useEffect(() => { fetchShow(); }, [showId]);
+  useEffect(() => { fetchShow(); }, [showId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchShow = async () => {
     try {

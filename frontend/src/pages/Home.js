@@ -13,6 +13,7 @@ const Home = () => {
 
   useEffect(() => {
     fetchMovies();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter]);
 
   // Auto-advance hero carousel every 5 seconds
