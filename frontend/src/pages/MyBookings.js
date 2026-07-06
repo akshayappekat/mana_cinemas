@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
+import API_BASE from '../config/api';
 
 const MyBookings = () => {
   const { token } = useContext(AuthContext);
@@ -13,7 +14,7 @@ const MyBookings = () => {
 
   const fetchBookings = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/bookings/my', {
+      const res = await axios.get(`${API_BASE}/api/bookings/my`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setBookings(res.data.bookings);
@@ -28,7 +29,7 @@ const MyBookings = () => {
     if (!window.confirm('Are you sure you want to cancel this booking?')) return;
     try {
       await axios.patch(
-        `http://localhost:5000/api/bookings/${bookingId}/cancel`,
+        `${API_BASE}/api/bookings/${bookingId}/cancel`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );

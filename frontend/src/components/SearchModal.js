@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import API_BASE from '../config/api';
 
 const SearchModal = ({ isOpen, onClose }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -31,7 +32,7 @@ const SearchModal = ({ isOpen, onClose }) => {
 
   const fetchTrendingMovies = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/movies?status=nowShowing');
+      const res = await axios.get(`${API_BASE}/api/movies?status=nowShowing`);
       setTrendingMovies(res.data.movies.slice(0, 10));
     } catch (err) {
       console.error(err);
@@ -41,7 +42,7 @@ const SearchModal = ({ isOpen, onClose }) => {
   const searchMovies = async () => {
     setLoading(true);
     try {
-      const res = await axios.get('http://localhost:5000/api/movies');
+      const res = await axios.get(`${API_BASE}/api/movies`);
       const filtered = res.data.movies.filter((movie) =>
         movie.title.toLowerCase().includes(searchQuery.toLowerCase())
       );

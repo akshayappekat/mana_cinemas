@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../../context/AuthContext';
+import API_BASE from '../../config/api';
 
 const AdminBookings = () => {
   const { token } = useContext(AuthContext);
@@ -9,7 +10,7 @@ const AdminBookings = () => {
   const [statusFilter, setStatusFilter] = useState('all');
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/bookings', {
+    axios.get(`${API_BASE}/api/bookings`, {
       headers: { Authorization: `Bearer ${token}` },
     }).then(r => setBookings(r.data.bookings)).catch(console.error);
   }, [token]);

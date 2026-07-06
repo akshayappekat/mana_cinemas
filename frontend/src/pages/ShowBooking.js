@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
 import UpiPayment from '../components/UpiPayment';
+import API_BASE from '../config/api';
 
 // ─────────────────────────────────────────────────────────────
 // SHOW-TIME CONFIGS
@@ -204,7 +205,7 @@ const ShowBooking = () => {
 
   const fetchShow = async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/shows/${showId}`);
+      const res = await axios.get(`${API_BASE}/api/shows/${showId}`);
       setShow(res.data.show);
     } catch {
       setError('Show not found');
@@ -257,7 +258,7 @@ const ShowBooking = () => {
     setBookingLoading(true); setError('');
     try {
       const res = await axios.post(
-        'http://localhost:5000/api/bookings',
+        `${API_BASE}/api/bookings`,
         { showId, seats: selectedSeats, seatCategory: 'silver', paymentMethod },
         { headers: { Authorization: `Bearer ${token}` } }
       );

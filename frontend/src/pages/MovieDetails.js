@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import API_BASE from '../config/api';
 
 const FIXED_TIMES = [
   { label: '10:00 AM', sub: 'VIP' },
@@ -75,8 +76,8 @@ const MovieDetails = () => {
     setLoading(true);
     try {
       const [movieRes, showsRes] = await Promise.all([
-        axios.get(`http://localhost:5000/api/movies/${id}`),
-        axios.get(`http://localhost:5000/api/shows?movieId=${id}&date=${selectedDate}`),
+        axios.get(`${API_BASE}/api/movies/${id}`),
+        axios.get(`${API_BASE}/api/shows?movieId=${id}&date=${selectedDate}`),
       ]);
       setMovie(movieRes.data.movie);
       setShows(showsRes.data.shows);

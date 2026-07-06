@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import MovieCard from '../components/MovieCard';
+import API_BASE from '../config/api';
 
 const Home = () => {
   const [movies, setMovies] = useState([]);
@@ -26,7 +27,7 @@ const Home = () => {
   const fetchMovies = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`http://localhost:5000/api/movies?status=${filter}`);
+      const res = await axios.get(`${API_BASE}/api/movies?status=${filter}`);
       setMovies(res.data.movies);
       setHeroIndex(0);
     } catch (err) {

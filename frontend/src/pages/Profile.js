@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import axios from 'axios';
+import API_BASE from '../config/api';
 
 const Profile = () => {
   const { user, token } = useContext(AuthContext);
@@ -20,7 +21,7 @@ const Profile = () => {
     setLoading(true);
     setMessage({ type: '', text: '' });
     try {
-      await axios.put('http://localhost:5000/api/users/profile', formData, {
+      await axios.put(`${API_BASE}/api/users/profile`, formData, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setMessage({ type: 'success', text: 'Profile updated successfully!' });

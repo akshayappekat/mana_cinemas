@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../../context/AuthContext';
+import API_BASE from '../../config/api';
 
-const API_SHOWS   = 'http://localhost:5000/api/shows';
-const API_MOVIES  = 'http://localhost:5000/api/movies';
-const API_CINEMAS = 'http://localhost:5000/api/cinemas';
+const API_SHOWS   = `${API_BASE}/api/shows`;
+const API_MOVIES  = `${API_BASE}/api/movies`;
+const API_CINEMAS = `${API_BASE}/api/cinemas`;
 
 const EMPTY = {
   movie: '', cinema: '', showDate: '', showTime: '10:00 AM',

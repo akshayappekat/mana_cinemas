@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../../context/AuthContext';
+import API_BASE from '../../config/api';
 
-const API = 'http://localhost:5000/api';
+const API = `${API_BASE}/api`;
 
 // ── reusable stat card
 const StatCard = ({ icon, label, value, color }) => (
