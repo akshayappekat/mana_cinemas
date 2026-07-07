@@ -223,11 +223,22 @@ const ShowBooking = () => {
     return 'available';
   };
 
+  const MAX_SEATS = 5;
+
   const toggle = (seatId) => {
     if (bookedSeats.includes(seatId)) return;
-    setSelectedSeats(prev =>
-      prev.includes(seatId) ? prev.filter(s => s !== seatId) : [...prev, seatId]
-    );
+    setSelectedSeats(prev => {
+      if (prev.includes(seatId)) {
+        // always allow deselect
+        return prev.filter(s => s !== seatId);
+      }
+      if (prev.length >= MAX_SEATS) {
+        setError(`You can select a maximum of ${MAX_SEATS} seats per booking.`);
+        return prev;
+      }
+      setError('');
+      return [...prev, seatId];
+    });
   };
 
   const activeLayout = SHOW_TIMES.find(t => t.id === activeTime)?.layout || 'dolby';
@@ -431,7 +442,7 @@ const ShowBooking = () => {
               onClick={() => setStep(2)}
               className="bg-primary text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-secondary transition"
             >
-              Pay ₹{totalAmount}
+              Pay ₹{totalAmount} · {selectedSeats.length}/{MAX_SEATS} seats
             </button>
           )}
         </div>
@@ -471,9 +482,20 @@ const ShowBooking = () => {
           {selectedSeats.length > 0 && (
             <div className="mt-6 bg-white rounded-2xl shadow-sm p-6 flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500 mb-1">
-                  {selectedSeats.length} seat{selectedSeats.length > 1 ? 's' : ''}: {selectedSeats.join(', ')}
-                </p>
+                <div className="flex items-center gap-3 mb-1">
+                  <p className="text-sm text-gray-500">
+                    {selectedSeats.length} seat{selectedSeats.length > 1 ? 's' : ''} selected: {selectedSeats.join(', ')}
+                  </p>
+                  {/* Seat count indicator dots */}
+                  <div className="flex gap-1">
+                    {[...Array(MAX_SEATS)].map((_, i) => (
+                      <div key={i} className={`w-2.5 h-2.5 rounded-full transition-all ${
+                        i < selectedSeats.length ? 'bg-violet-600' : 'bg-gray-200'
+                      }`} />
+                    ))}
+                  </div>
+                  <span className="text-xs text-gray-400">{selectedSeats.length}/{MAX_SEATS}</span>
+                </div>
                 <p className="text-2xl font-bold text-gray-900">₹{totalAmount}</p>
                 <p className="text-xs text-gray-400">Incl. ₹30 convenience fee</p>
               </div>
@@ -485,7 +507,11 @@ const ShowBooking = () => {
               </button>
             </div>
           )}
-          {error && <p className="text-red-500 mt-4 text-center text-sm">{error}</p>}
+          {error && <p className="text-red-500 mt-4 text-center text-sm font-medium">{error}</p>}
+          {/* Max seats hint */}
+          {selectedSeats.length === 0 && (
+            <p className="text-center text-gray-400 text-xs mt-4">Select 1 to {MAX_SEATS} seats to continue</p>
+          )}
         </div>
 
       ) : step === 2 ? (

@@ -10,6 +10,14 @@ router.post('/', protect, async (req, res) => {
   try {
     const { showId, seats, seatCategory, paymentMethod } = req.body;
 
+    // Validate seat count (min 1, max 5)
+    if (!seats || seats.length === 0) {
+      return res.status(400).json({ success: false, message: 'Please select at least 1 seat' });
+    }
+    if (seats.length > 5) {
+      return res.status(400).json({ success: false, message: 'You can book a maximum of 5 seats per booking' });
+    }
+
     // Validate show
     const show = await Show.findById(showId).populate('movie cinema');
     if (!show || !show.isActive) {
