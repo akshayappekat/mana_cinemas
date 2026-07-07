@@ -32,7 +32,11 @@ const MyBookings = () => {
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      fetchBookings();
+      // Re-fetch bookings after cancel
+      const res = await axios.get(`${API_BASE}/api/bookings/my`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setBookings(res.data.bookings);
       alert('Booking cancelled successfully!');
     } catch (err) {
       alert(err.response?.data?.message || 'Failed to cancel booking');

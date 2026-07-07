@@ -173,6 +173,7 @@ const CityIcon = ({ city }) => {
         <line x1="0" y1="50" x2="80" y2="50" strokeWidth="1"/>
       </svg>
     ),
+    'Vizag': (
       <svg viewBox="0 0 80 60" fill="none" stroke="#6366f1" strokeWidth="1.2" className="w-16 h-12">
         {/* Submarine museum + sea */}
         <ellipse cx="30" cy="40" rx="22" ry="8"/>
