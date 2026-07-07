@@ -49,6 +49,10 @@ const showSchema = new mongoose.Schema(
       type: [String],
       default: [],
     },
+    blockedSeats: {
+      type: [String],
+      default: [],
+    },
     isActive: {
       type: Boolean,
       default: true,

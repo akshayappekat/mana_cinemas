@@ -101,7 +101,9 @@ const Seat = ({ col, seatId, status, onClick, size = 'sm' }) => {
 
   const colours =
     status === 'booked'
-      ? 'bg-white border border-gray-200 text-gray-400 cursor-not-allowed'
+      ? 'bg-gray-200 border border-gray-300 text-gray-400 cursor-not-allowed'
+      : status === 'blocked'
+      ? 'bg-orange-100 border border-orange-300 text-orange-400 cursor-not-allowed'
       : status === 'selected'
       ? 'bg-violet-600 text-white shadow-md scale-105 border-2 border-violet-700 cursor-pointer'
       : 'bg-blue-50 border border-blue-200 text-gray-800 hover:bg-blue-100 hover:border-blue-400 cursor-pointer';
@@ -109,10 +111,11 @@ const Seat = ({ col, seatId, status, onClick, size = 'sm' }) => {
   return (
     <button
       onClick={onClick}
-      disabled={status === 'booked'}
+      disabled={status === 'booked' || status === 'blocked'}
       className={`${base} transition-all duration-150 ${colours}`}
+      title={status === 'blocked' ? 'Seat blocked by admin' : undefined}
     >
-      {col}
+      {status === 'blocked' ? '🔒' : col}
     </button>
   );
 };
@@ -162,7 +165,7 @@ const RowLabel = ({ row }) => (
 // Seat legend
 // ─────────────────────────────────────────────────────────────
 const Legend = () => (
-  <div className="flex items-end justify-center gap-8 pt-4 border-t border-gray-100 mt-6">
+  <div className="flex items-end justify-center gap-6 pt-4 border-t border-gray-100 mt-6">
     <div className="flex flex-col items-center gap-1">
       <div className="w-7 h-7 rounded-xl bg-blue-50 border border-blue-200" />
       <span className="text-xs text-gray-500">Best Seats ⓘ</span>
@@ -172,10 +175,16 @@ const Legend = () => (
       <span className="text-xs text-gray-500">Available</span>
     </div>
     <div className="flex flex-col items-center gap-1">
-      <div className="w-7 h-7 rounded-xl bg-white border border-gray-200 flex items-center justify-center">
+      <div className="w-7 h-7 rounded-xl bg-gray-200 border border-gray-300 flex items-center justify-center">
         <span className="text-gray-400 text-xs">×</span>
       </div>
       <span className="text-xs text-gray-500">Occupied</span>
+    </div>
+    <div className="flex flex-col items-center gap-1">
+      <div className="w-7 h-7 rounded-xl bg-orange-100 border border-orange-300 flex items-center justify-center">
+        <span className="text-xs">🔒</span>
+      </div>
+      <span className="text-xs text-gray-500">Blocked</span>
     </div>
     <div className="flex flex-col items-center gap-1">
       <div className="w-7 h-7 rounded-xl bg-violet-600" />
@@ -216,9 +225,11 @@ const ShowBooking = () => {
   }, [showId]);
 
   const bookedSeats = show?.bookedSeats || [];
+  const blockedSeats = show?.blockedSeats || [];
 
   const getStatus = (seatId) => {
     if (bookedSeats.includes(seatId)) return 'booked';
+    if (blockedSeats.includes(seatId)) return 'blocked';
     if (selectedSeats.includes(seatId)) return 'selected';
     return 'available';
   };
@@ -227,9 +238,9 @@ const ShowBooking = () => {
 
   const toggle = (seatId) => {
     if (bookedSeats.includes(seatId)) return;
+    if (blockedSeats.includes(seatId)) return; // blocked by admin
     setSelectedSeats(prev => {
       if (prev.includes(seatId)) {
-        // always allow deselect
         return prev.filter(s => s !== seatId);
       }
       if (prev.length >= MAX_SEATS) {

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../../context/AuthContext';
 import API_BASE from '../../config/api';
+import AdminSeatManager from './AdminSeatManager';
 
 const API_SHOWS   = `${API_BASE}/api/shows`;
 const API_MOVIES  = `${API_BASE}/api/movies`;
@@ -34,6 +35,7 @@ const AdminShows = () => {
   const [filterDate, setFilterDate] = useState('');
   const [selectedIds, setSelectedIds] = useState([]);
   const [bulkDeleteConfirm, setBulkDeleteConfirm] = useState(false);
+  const [seatManagerShow, setSeatManagerShow] = useState(null);
 
   useEffect(() => {
     fetchShows(); fetchMovies(); fetchCinemas();
@@ -223,6 +225,8 @@ const AdminShows = () => {
                     <div className="flex gap-2">
                       <button onClick={() => openEdit(s)}
                         className="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-blue-100">Edit</button>
+                      <button onClick={() => setSeatManagerShow(s)}
+                        className="bg-orange-50 text-orange-600 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-orange-100">🔒 Seats</button>
                       <button onClick={() => setDeleteId(s._id)}
                         className="bg-red-50 text-red-600 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-red-100">Delete</button>
                     </div>
@@ -353,6 +357,20 @@ const AdminShows = () => {
             </div>
           </div>
         </div>
+      )}
+      {/* Seat Manager Modal */}
+      {seatManagerShow && (
+        <AdminSeatManager
+          show={seatManagerShow}
+          onClose={() => setSeatManagerShow(null)}
+          onUpdate={(newBlockedSeats) => {
+            setShows(prev => prev.map(s =>
+              s._id === seatManagerShow._id
+                ? { ...s, blockedSeats: newBlockedSeats }
+                : s
+            ));
+          }}
+        />
       )}
     </div>
   );

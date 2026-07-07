@@ -33,6 +33,15 @@ router.post('/', protect, async (req, res) => {
       });
     }
 
+    // Check if any seat is blocked by admin
+    const blockedConflict = seats.filter((seat) => show.blockedSeats?.includes(seat));
+    if (blockedConflict.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: `Seats are not available: ${blockedConflict.join(', ')}`,
+      });
+    }
+
     // Calculate total
     const pricePerSeat = show.ticketPrice[seatCategory] || show.ticketPrice.silver;
     const convenienceFee = 30;

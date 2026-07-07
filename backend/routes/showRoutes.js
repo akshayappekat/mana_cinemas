@@ -67,6 +67,36 @@ router.put('/:id', protect, adminOnly, async (req, res) => {
   }
 });
 
+// PATCH /api/shows/:id/block-seats — admin only: block or unblock seats
+router.patch('/:id/block-seats', protect, adminOnly, async (req, res) => {
+  try {
+    const { seats, action } = req.body; // action: 'block' | 'unblock'
+    const show = await Show.findById(req.params.id);
+    if (!show) return res.status(404).json({ success: false, message: 'Show not found' });
+
+    if (action === 'block') {
+      // Add seats to blockedSeats (avoid duplicates, skip already booked)
+      const alreadyBooked = seats.filter(s => show.bookedSeats.includes(s));
+      if (alreadyBooked.length > 0) {
+        return res.status(400).json({
+          success: false,
+          message: `Seats already booked by users: ${alreadyBooked.join(', ')}`,
+        });
+      }
+      show.blockedSeats = [...new Set([...show.blockedSeats, ...seats])];
+    } else if (action === 'unblock') {
+      show.blockedSeats = show.blockedSeats.filter(s => !seats.includes(s));
+    } else {
+      return res.status(400).json({ success: false, message: 'Invalid action. Use block or unblock' });
+    }
+
+    await show.save();
+    res.json({ success: true, blockedSeats: show.blockedSeats, message: `Seats ${action}ed successfully` });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 // DELETE /api/shows/:id — admin only
 router.delete('/:id', protect, adminOnly, async (req, res) => {
   try {
