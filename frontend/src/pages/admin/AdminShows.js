@@ -32,6 +32,8 @@ const AdminShows = () => {
   const [error, setError]      = useState('');
   const [deleteId, setDeleteId] = useState(null);
   const [filterDate, setFilterDate] = useState('');
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [bulkDeleteConfirm, setBulkDeleteConfirm] = useState(false);
 
   useEffect(() => {
     fetchShows(); fetchMovies(); fetchCinemas();
@@ -95,6 +97,30 @@ const AdminShows = () => {
     setDeleteId(null); fetchShows();
   };
 
+  // ── Bulk selection helpers
+  const toggleSelect = (id) => {
+    setSelectedIds(prev =>
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    );
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIds.length === filtered.length) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(filtered.map(s => s._id));
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    await Promise.all(
+      selectedIds.map(id => axios.delete(`${API_SHOWS}/${id}`, { headers }))
+    );
+    setSelectedIds([]);
+    setBulkDeleteConfirm(false);
+    fetchShows();
+  };
+
   const filtered = shows.filter(s => {
     if (!filterDate) return true;
     return s.showDate?.startsWith(filterDate);
@@ -113,13 +139,35 @@ const AdminShows = () => {
         </button>
       </div>
 
-      {/* Filter by date */}
-      <div className="flex items-center gap-3">
+      {/* Filter + Bulk Actions Bar */}
+      <div className="flex flex-wrap items-center gap-3">
         <label className="text-sm font-medium text-gray-600">Filter by date:</label>
-        <input type="date" value={filterDate} onChange={e => setFilterDate(e.target.value)}
+        <input type="date" value={filterDate} onChange={e => { setFilterDate(e.target.value); setSelectedIds([]); }}
           className="border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
         {filterDate && (
-          <button onClick={() => setFilterDate('')} className="text-sm text-gray-400 hover:text-gray-600">Clear</button>
+          <button onClick={() => { setFilterDate(''); setSelectedIds([]); }}
+            className="text-sm text-gray-400 hover:text-gray-600">Clear</button>
+        )}
+
+        {/* Bulk delete button — appears when rows are selected */}
+        {selectedIds.length > 0 && (
+          <div className="ml-auto flex items-center gap-3">
+            <span className="text-sm font-semibold text-gray-700">
+              {selectedIds.length} selected
+            </span>
+            <button
+              onClick={() => setSelectedIds([])}
+              className="text-sm text-gray-500 hover:text-gray-700 border border-gray-200 px-3 py-1.5 rounded-lg"
+            >
+              Deselect All
+            </button>
+            <button
+              onClick={() => setBulkDeleteConfirm(true)}
+              className="bg-red-500 text-white px-4 py-1.5 rounded-lg text-sm font-bold hover:bg-red-600 transition flex items-center gap-2"
+            >
+              🗑️ Delete {selectedIds.length} Show{selectedIds.length > 1 ? 's' : ''}
+            </button>
+          </div>
         )}
       </div>
 
@@ -128,39 +176,60 @@ const AdminShows = () => {
         <table className="w-full text-sm">
           <thead className="bg-gray-50 border-b">
             <tr>
+              {/* Select all checkbox */}
+              <th className="py-3 px-4 w-10">
+                <input
+                  type="checkbox"
+                  checked={filtered.length > 0 && selectedIds.length === filtered.length}
+                  onChange={toggleSelectAll}
+                  className="w-4 h-4 accent-primary rounded cursor-pointer"
+                />
+              </th>
               {['Movie', 'Cinema', 'Date', 'Time', 'Format', 'Prices', 'Seats', 'Actions'].map(h => (
                 <th key={h} className="text-left py-3 px-4 text-gray-500 font-medium">{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {filtered.map(s => (
-              <tr key={s._id} className="border-b hover:bg-gray-50">
-                <td className="py-3 px-4 font-semibold">{s.movie?.title || '—'}</td>
-                <td className="py-3 px-4 text-gray-600">{s.cinema?.name || '—'}</td>
-                <td className="py-3 px-4">{s.showDate ? new Date(s.showDate).toLocaleDateString('en-IN') : '—'}</td>
-                <td className="py-3 px-4 font-medium">{s.showTime}</td>
-                <td className="py-3 px-4">
-                  <span className="bg-purple-50 text-purple-700 text-xs px-2 py-1 rounded-full font-medium">{s.format}</span>
-                </td>
-                <td className="py-3 px-4 text-xs text-gray-600">
-                  S:₹{s.ticketPrice?.silver} · G:₹{s.ticketPrice?.gold} · P:₹{s.ticketPrice?.platinum}
-                </td>
-                <td className="py-3 px-4">
-                  <span className={`text-xs font-semibold ${s.availableSeats === 0 ? 'text-red-500' : 'text-green-600'}`}>
-                    {s.availableSeats}/{s.totalSeats}
-                  </span>
-                </td>
-                <td className="py-3 px-4">
-                  <div className="flex gap-2">
-                    <button onClick={() => openEdit(s)}
-                      className="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-blue-100">Edit</button>
-                    <button onClick={() => setDeleteId(s._id)}
-                      className="bg-red-50 text-red-600 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-red-100">Delete</button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+            {filtered.map(s => {
+              const isSelected = selectedIds.includes(s._id);
+              return (
+                <tr key={s._id} className={`border-b transition ${isSelected ? 'bg-red-50' : 'hover:bg-gray-50'}`}>
+                  {/* Row checkbox */}
+                  <td className="py-3 px-4">
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => toggleSelect(s._id)}
+                      className="w-4 h-4 accent-primary rounded cursor-pointer"
+                    />
+                  </td>
+                  <td className="py-3 px-4 font-semibold">{s.movie?.title || '—'}</td>
+                  <td className="py-3 px-4 text-gray-600">{s.cinema?.name || '—'}</td>
+                  <td className="py-3 px-4">{s.showDate ? new Date(s.showDate).toLocaleDateString('en-IN') : '—'}</td>
+                  <td className="py-3 px-4 font-medium">{s.showTime}</td>
+                  <td className="py-3 px-4">
+                    <span className="bg-purple-50 text-purple-700 text-xs px-2 py-1 rounded-full font-medium">{s.format}</span>
+                  </td>
+                  <td className="py-3 px-4 text-xs text-gray-600">
+                    S:₹{s.ticketPrice?.silver} · G:₹{s.ticketPrice?.gold} · P:₹{s.ticketPrice?.platinum}
+                  </td>
+                  <td className="py-3 px-4">
+                    <span className={`text-xs font-semibold ${s.availableSeats === 0 ? 'text-red-500' : 'text-green-600'}`}>
+                      {s.availableSeats}/{s.totalSeats}
+                    </span>
+                  </td>
+                  <td className="py-3 px-4">
+                    <div className="flex gap-2">
+                      <button onClick={() => openEdit(s)}
+                        className="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-blue-100">Edit</button>
+                      <button onClick={() => setDeleteId(s._id)}
+                        className="bg-red-50 text-red-600 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-red-100">Delete</button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
         {filtered.length === 0 && <div className="text-center py-12 text-gray-400">No shows found</div>}
@@ -258,6 +327,29 @@ const AdminShows = () => {
             <div className="flex gap-3">
               <button onClick={() => setDeleteId(null)} className="flex-1 border-2 border-gray-200 py-2.5 rounded-xl font-semibold">Cancel</button>
               <button onClick={handleDelete} className="flex-1 bg-red-500 text-white py-2.5 rounded-xl font-bold hover:bg-red-600">Delete</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Bulk Delete Confirmation */}
+      {bulkDeleteConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl text-center">
+            <div className="text-5xl mb-3">🗑️</div>
+            <h3 className="text-lg font-bold mb-2">Delete {selectedIds.length} Shows?</h3>
+            <p className="text-gray-500 text-sm mb-6">
+              This will permanently delete <span className="font-bold text-red-500">{selectedIds.length} shows</span>. Existing bookings may be affected.
+            </p>
+            <div className="flex gap-3">
+              <button onClick={() => setBulkDeleteConfirm(false)}
+                className="flex-1 border-2 border-gray-200 py-2.5 rounded-xl font-semibold hover:bg-gray-50">
+                Cancel
+              </button>
+              <button onClick={handleBulkDelete}
+                className="flex-1 bg-red-500 text-white py-2.5 rounded-xl font-bold hover:bg-red-600">
+                Delete All
+              </button>
             </div>
           </div>
         </div>
