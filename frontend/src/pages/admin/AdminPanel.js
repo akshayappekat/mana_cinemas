@@ -6,12 +6,14 @@ import AdminMovies   from './AdminMovies';
 import AdminCinemas  from './AdminCinemas';
 import AdminShows    from './AdminShows';
 import AdminBookings from './AdminBookings';
+import AdminSeatManager from './AdminSeatManagerPage';
 
 const NAV = [
   { id: 'dashboard', label: 'Dashboard',  icon: '📊' },
   { id: 'movies',    label: 'Movies',     icon: '🎬' },
   { id: 'cinemas',   label: 'Cinemas',    icon: '🏛️' },
   { id: 'shows',     label: 'Shows',      icon: '📅' },
+  { id: 'seats',     label: 'Seat Mgmt',  icon: '🔒' },
   { id: 'bookings',  label: 'Bookings',   icon: '🎟️' },
 ];
 
@@ -20,6 +22,7 @@ const PAGES = {
   movies:    AdminMovies,
   cinemas:   AdminCinemas,
   shows:     AdminShows,
+  seats:     AdminSeatManager,
   bookings:  AdminBookings,
 };
 
