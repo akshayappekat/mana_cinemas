@@ -156,7 +156,23 @@ const CityIcon = ({ city }) => {
         <line x1="0" y1="50" x2="80" y2="50" strokeWidth="1"/>
       </svg>
     ),
-    'Vizag': (
+    'Guntur': (
+      <svg viewBox="0 0 80 60" fill="none" stroke="#6366f1" strokeWidth="1.2" className="w-16 h-12">
+        {/* Kondaveedu Fort */}
+        <rect x="20" y="32" width="40" height="18" rx="1"/>
+        <rect x="20" y="24" width="8" height="10"/>
+        <rect x="52" y="24" width="8" height="10"/>
+        <path d="M20 32 L60 32"/>
+        <rect x="36" y="24" width="8" height="8"/>
+        <rect x="24" y="38" width="6" height="12"/>
+        <rect x="50" y="38" width="6" height="12"/>
+        <rect x="36" y="36" width="8" height="14"/>
+        <path d="M22 24 L22 20 L26 20 L26 24 M54 24 L54 20 L58 20 L58 24 M38 24 L38 20 L42 20 L42 24"/>
+        <rect x="5" y="42" width="12" height="8"/>
+        <rect x="63" y="42" width="12" height="8"/>
+        <line x1="0" y1="50" x2="80" y2="50" strokeWidth="1"/>
+      </svg>
+    ),
       <svg viewBox="0 0 80 60" fill="none" stroke="#6366f1" strokeWidth="1.2" className="w-16 h-12">
         {/* Submarine museum + sea */}
         <ellipse cx="30" cy="40" rx="22" ry="8"/>
@@ -185,13 +201,13 @@ const CityIcon = ({ city }) => {
 const POPULAR_CITIES = [
   'Hyderabad', 'Bengaluru', 'Chennai', 'Mumbai',
   'Delhi NCR', 'Kolkata', 'Pune', 'Ahmedabad',
-  'Goa', 'Dubai', 'Chandigarh', 'Vizag',
+  'Goa', 'Dubai', 'Guntur', 'Vizag',
 ];
 
 const ALL_CITIES = [
   'Agra','Ahmedabad','Ajmer','Aligarh','Allahabad','Amritsar','Aurangabad',
   'Bengaluru','Bhopal','Bhubaneswar','Chandigarh','Chennai','Coimbatore',
-  'Delhi NCR','Dehradun','Dubai','Ernakulam','Faridabad','Goa','Gurgaon',
+  'Delhi NCR','Dehradun','Dubai','Ernakulam','Faridabad','Goa','Guntur','Gurgaon',
   'Guwahati','Hyderabad','Indore','Jaipur','Jalandhar','Jammu','Jodhpur',
   'Kanpur','Kochi','Kolkata','Kozhikode','Lucknow','Ludhiana','Madurai',
   'Mangalore','Meerut','Mumbai','Mysuru','Nagpur','Nashik','Noida',
