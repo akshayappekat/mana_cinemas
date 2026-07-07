@@ -219,7 +219,7 @@ const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 
 const LocationModal = ({ isOpen, onClose, selectedCity, onSelectCity }) => {
   const [search, setSearch] = useState('');
-  const [activeLetter, setActiveLetter] = useState('A');
+  const [activeLetter, setActiveLetter] = useState('');
   const searchRef = useRef(null);
 
   useEffect(() => {
@@ -231,7 +231,9 @@ const LocationModal = ({ isOpen, onClose, selectedCity, onSelectCity }) => {
 
   const filteredCities = search.trim()
     ? ALL_CITIES.filter(c => c.toLowerCase().includes(search.toLowerCase()))
-    : ALL_CITIES.filter(c => c.toUpperCase().startsWith(activeLetter));
+    : activeLetter
+    ? ALL_CITIES.filter(c => c.toUpperCase().startsWith(activeLetter))
+    : ALL_CITIES;
 
   const handleSelect = (city) => {
     onSelectCity(city);
